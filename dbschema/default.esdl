@@ -67,17 +67,16 @@ module default {
 
     function md_use_case(feature: Feature) -> str using (
         str_format(
-            '# ?\n\n' ++
-            'Описание:  \n?\n\n' ++
-            'Пользователи:  \n?\n\n' ++
-            'Триггер:  \n?\n\n' ++
-            'Предусловия:  \n?\n\n' ++
-            'Постусловия:  \n?\n\n' ++
-            'Обычный сценарий:  \n?\n\n' ++
-            'Альтернативные сценарии:  \n?\n\n' ++
-            'Исключения:  \n?\n\n' ++
-            'Дата создания:  ?\n' ++
-            'Дата обновления:  ?\n',
+            '# ?\n' ++
+            '## Описание\n?\n' ++
+            '## Пользователи\n?\n' ++
+            '## Триггер\n?\n' ++
+            '## Предусловия\n?\n' ++
+            '## Постусловия\n?\n' ++
+            '## Обычный сценарий\n?\n' ++
+            '## Альтернативные сценарии\n?\n' ++
+            '## Исключения\n?\n' ++
+            '\nДата последнего изменения: ?\n',
             feature.name,
             feature.description,
             array_join(array_agg(md_unordered_list(feature.target_users.name, 1)), '\n') ?? '',
@@ -87,8 +86,7 @@ module default {
             feature.normal_flow,
             array_join(feature.alternative_flows, '\n\n') ?? '',
             array_join(feature.exceptions, '\n\n') ?? '',
-            to_str(feature.created_at, 'DD.MM.YYYY') ?? '',
-            to_str(feature.updated_at, 'DD.MM.YYYY') ?? ''
+            to_str(feature.updated_at ?? feature.created_at, 'DD.MM.YYYY'),
         ) ?? ''
     );
 }

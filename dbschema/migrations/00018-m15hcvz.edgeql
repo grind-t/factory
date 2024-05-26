@@ -1,0 +1,5 @@
+CREATE MIGRATION m15hcvzqzjggyubd5nempoira6rpk53rl7wl335ykofoonrsx5ofqa
+    ONTO m13izufs356b3pzigih2zmkglxhuijsycmwzgqeg72thwexdnrahqq
+{
+  ALTER FUNCTION default::md_use_case(feature: default::Feature) USING ((default::str_format(((((((((('# ?\n' ++ '## Описание\n?\n') ++ '## Пользователи\n?\n') ++ '## Триггер\n?\n') ++ '## Предусловия\n?\n') ++ '## Постусловия\n?\n') ++ '## Обычный сценарий\n?\n') ++ '## Альтернативные сценарии\n?\n') ++ '## Исключения\n?\n') ++ '\nДата последнего изменения: ?\n'), feature.name, feature.description, (std::array_join(std::array_agg(default::md_unordered_list(feature.target_users.name, 1)), '\n') ?? ''), feature.trigger_condition, (std::array_join(std::array_agg(default::md_ordered_list(std::enumerate(std::array_unpack(feature.pre_conditions)), 1)), '\n') ?? ''), (std::array_join(std::array_agg(default::md_ordered_list(std::enumerate(std::array_unpack(feature.post_conditions)), 1)), '\n') ?? ''), feature.normal_flow, (std::array_join(feature.alternative_flows, '\n\n') ?? ''), (std::array_join(feature.exceptions, '\n\n') ?? ''), std::to_str((feature.updated_at ?? feature.created_at), 'DD.MM.YYYY')) ?? ''));
+};
