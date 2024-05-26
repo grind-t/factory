@@ -22,6 +22,7 @@ module default {
         data_scheme: str;
         algorithm_scheme: str;
         required project: Project;
+        use_case_md := md_use_case(__source__)
     }
 
     type FeautureCategory {
@@ -44,4 +45,50 @@ module default {
         multi users := .<project[is UserType];
         multi features := .<project[is Feature];
     }
+
+    function str_format(format: str, variadic args: str) -> str using (
+        array_join(
+            array_agg((
+                for chunk in enumerate(array_unpack(str_split(format, '?')[:-1])) union (
+                    '' if args[chunk.0] = '' else chunk.1 ++ args[chunk.0]
+                )
+            )), 
+            ''
+        )
+    );
+
+    function md_unordered_list(item: str, level: int64) -> str using (
+        str_repeat(' ', (level - 1) * 2) ++ '- ' ++ item
+    );
+
+    function md_ordered_list(item: tuple<int64, str>, level: int64) -> str using (
+        str_repeat(' ', (level - 1) * 2) ++ <str>(item.0 + 1) ++ '. ' ++ item.1
+    );
+
+    function md_use_case(feature: Feature) -> str using (
+        str_format(
+            '# ?\n\n' ++
+            'Описание:  \n?\n\n' ++
+            'Пользователи:  \n?\n\n' ++
+            'Триггер:  \n?\n\n' ++
+            'Предусловия:  \n?\n\n' ++
+            'Постусловия:  \n?\n\n' ++
+            'Обычный сценарий:  \n?\n\n' ++
+            'Альтернативные сценарии:  \n?\n\n' ++
+            'Исключения:  \n?\n\n' ++
+            'Дата создания:  ?\n' ++
+            'Дата обновления:  ?\n',
+            feature.name,
+            feature.description,
+            array_join(array_agg(md_unordered_list(feature.target_users.name, 1)), '\n') ?? '',
+            feature.trigger_condition,
+            array_join(array_agg(md_ordered_list(enumerate(array_unpack(feature.pre_conditions)), 1)), '\n') ?? '',
+            array_join(array_agg(md_ordered_list(enumerate(array_unpack(feature.post_conditions)), 1)), '\n') ?? '',
+            feature.normal_flow,
+            array_join(feature.alternative_flows, '\n\n') ?? '',
+            array_join(feature.exceptions, '\n\n') ?? '',
+            to_str(feature.created_at, 'DD.MM.YYYY') ?? '',
+            to_str(feature.updated_at, 'DD.MM.YYYY') ?? ''
+        ) ?? ''
+    );
 }
